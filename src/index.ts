@@ -255,7 +255,7 @@ export class WhatsAppAPI {
             response
         };
 
-        this.user_function(this.on?.sent, args);
+        await this.user_function(this.on?.sent, args);
 
         return response ?? promise;
     }
@@ -790,7 +790,7 @@ export class WhatsAppAPI {
                 Whatsapp: this
             };
 
-            this.user_function(this.on?.message, args);
+            await this.user_function(this.on?.message, args);
         } else if ("statuses" in value) {
             const statuses = value.statuses[0];
 
@@ -814,7 +814,7 @@ export class WhatsAppAPI {
                 raw: data
             };
 
-            this.user_function(this.on?.status, args);
+            await this.user_function(this.on?.status, args);
         }
         // If unknown payload, just ignore it
         // Facebook doesn't care about your server's opinion
@@ -900,15 +900,15 @@ export class WhatsAppAPI {
      * @param f - The user function to call
      * @param a - The arguments to pass to the function
      */
-    private user_function<A, F extends ((...a: A[]) => unknown) | undefined>(
-        f: F,
-        ...a: A[]
-    ) {
+    private async user_function<
+        A,
+        F extends ((...a: A[]) => unknown) | undefined
+    >(f: F, ...a: A[]) {
         if (f) {
             if (this.offload_functions) {
                 this.offload(f, ...a);
             } else {
-                f(...a);
+                await f(...a);
             }
         }
     }
